@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="el">
+<html lang="el" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +28,7 @@
   html, body {
     background: var(--bg);
     color: var(--ink);
-    font-family: 'EB Garamond', Georgia, serif;
+    font-family: 'Literata', Georgia, serif;
     font-size: 18px;
     line-height: 1.55;
     min-height: 100vh;
@@ -108,7 +108,7 @@
   }
 
   .brand-text h1 {
-    font-family: 'EB Garamond', Georgia, serif;
+    font-family: 'Literata', Georgia, serif;
     font-weight: 500;
     font-size: 22px;
     letter-spacing: 0.01em;
@@ -510,7 +510,7 @@
   .results .verdict.fail { color: var(--red); }
 
   .score-display {
-    font-family: 'EB Garamond', Georgia, serif;
+    font-family: 'Literata', Georgia, serif;
     font-size: 96px;
     font-weight: 500;
     line-height: 1;
@@ -690,7 +690,7 @@
     border: 1px solid var(--line);
     color: var(--ink);
     padding: 12px 16px;
-    font-family: 'EB Garamond', Georgia, serif;
+    font-family: 'Literata', Georgia, serif;
     font-size: 17px;
     margin-bottom: 14px;
     outline: none;
@@ -875,7 +875,7 @@
   .power-table {
     width: 100%;
     border-collapse: collapse;
-    font-family: 'EB Garamond', Georgia, serif;
+    font-family: 'Literata', Georgia, serif;
     font-size: 15px;
     color: var(--ink);
   }
@@ -928,7 +928,7 @@
   .doc-table {
     width: 100%;
     border-collapse: collapse;
-    font-family: 'EB Garamond', Georgia, serif;
+    font-family: 'Literata', Georgia, serif;
     font-size: 15px;
     color: var(--ink);
   }
@@ -1078,7 +1078,7 @@
     margin-bottom: 16px;
   }
   .doc-title {
-    font-family: 'EB Garamond', Georgia, serif;
+    font-family: 'Literata', Georgia, serif;
     font-size: 30px;
     font-weight: 500;
     line-height: 1.2;
@@ -1182,10 +1182,57 @@
 
   /* selectable scrollbar */
   ::selection { background: var(--amber); color: var(--bg); }
+
+  /* ========== LIGHT THEME ========== */
+  [data-theme="light"] {
+    --bg: #f5f0e8;
+    --panel: #ffffff;
+    --panel-2: #ede8de;
+    --line: #ccc7ba;
+    --line-bright: #b0aa9a;
+    --ink: #1a1915;
+    --ink-dim: #4a4640;
+    --ink-faint: #8a8474;
+  }
+
+  [data-theme="light"] body {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(200, 100, 0, 0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(60, 120, 200, 0.03) 0%, transparent 60%),
+      var(--bg);
+  }
+
+  [data-theme="light"] body::before { display: none; }
+
+  /* ========== THEME TOGGLE BUTTON ========== */
+  .theme-toggle {
+    background: none;
+    border: 1px solid var(--line-bright);
+    color: var(--ink-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.2s, color 0.2s;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover {
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+  .theme-toggle-icon {
+    font-size: 13px;
+    line-height: 1;
+  }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;1,7..72,400;1,7..72,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -1198,9 +1245,15 @@
         <div class="sub">Πρακτική Εξετάσεων &nbsp;·&nbsp; Εισαγωγικό Επίπεδο</div>
       </div>
     </div>
-    <div class="signal">
-      <div class="pulse"></div>
-      <span>On Air</span>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Εναλλαγή θέματος">
+        <span class="theme-toggle-icon" id="themeIcon">☀</span>
+        <span id="themeLabel">Φωτεινό</span>
+      </button>
+      <div class="signal">
+        <div class="pulse"></div>
+        <span>On Air</span>
+      </div>
     </div>
   </header>
 
@@ -1208,6 +1261,26 @@
 </div>
 
 <script>
+(function() {
+  const saved = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  function updateToggleUI() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const icon = document.getElementById('themeIcon');
+    const label = document.getElementById('themeLabel');
+    if (icon) icon.textContent = isDark ? '☀' : '☽';
+    if (label) label.textContent = isDark ? 'Φωτεινό' : 'Σκοτεινό';
+  }
+  document.addEventListener('DOMContentLoaded', updateToggleUI);
+  window.toggleTheme = function() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateToggleUI();
+  };
+})();
+
 const POWER_TABLE_HTML = "<table class=\"power-table\"><thead><tr><th colspan=\"2\">Υποζώνες συχνοτήτων<br>(σε MHZ)</th><th colspan=\"2\">Μέγιστη επιτρεπόμενη ισχύς κορυφής (PEP) εξόδου πομπού (σε Watt)</th></tr><tr><th>Από</th><th>Έως</th><th>«ΚΑΤΗΓΟΡΙΑ 1»</th><th>«ΚΑΤΗΓΟΡΙΑ ΕΙΣΑΓΩΓΙΚΟΥ ΕΠΙΠΕΔΟΥ»</th></tr></thead><tbody><tr><td>0.1357</td><td>0.1378</td><td>1 W eirp</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr><tr><td>1,81</td><td>1,85</td><td>400</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr><tr><td>3,5</td><td>3,8</td><td>400</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr><tr><td>7,0</td><td>7,1</td><td>400</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr><tr class=\"allowed-entry\"><td>7,1</td><td>7,2</td><td>400</td><td>10</td></tr><tr><td>10,1</td><td>10,15</td><td>400</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr><tr><td>14</td><td>14,25</td><td>400</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr><tr class=\"allowed-entry\"><td>14,25</td><td>14,35</td><td>400</td><td>10</td></tr><tr><td>18,068</td><td>18,168</td><td>400</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr><tr class=\"allowed-entry\"><td>21</td><td>21,45</td><td>400</td><td>10</td></tr><tr><td>24,89</td><td>24,99</td><td>400</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr><tr class=\"allowed-entry\"><td>28</td><td>29,7</td><td>400</td><td>10</td></tr><tr><td>* 50</td><td>* 52</td><td>100</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr><tr><td>* 70,20</td><td>* 70,25</td><td>100</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr><tr class=\"allowed-entry\"><td>144</td><td>146</td><td>100</td><td>10</td></tr><tr class=\"allowed-entry\"><td>430</td><td>440</td><td>50</td><td>10</td></tr><tr><td colspan=\"2\" class=\"span\">Άνω των 1240</td><td>50</td><td class=\"denied\">Δεν επιτρέπεται εκπομπή</td></tr></tbody></table>";
 const CALLSIGN_TABLE_HTML = "<table class=\"doc-table callsign-table\"><thead><tr><th>ΕΙΔΟΣ ΔΙΑΚΡΙΤΙΚΩΝ ΚΛΗΣΕΩΣ</th><th>ΕΝΔΙΑΦΕΡΟΜΕΝΟΙ</th><th>ΔΙΑΚΡΙΤΙΚΑ ΚΛΗΣΕΩΣ (CALL SIGN)</th></tr></thead><tbody><tr><td>Διακριτικά κλήσεως ραδιοερασιτεχνικών αδειών ΚΑΤΗΓΟΡΙΑΣ 1 — CEPT</td><td>Ραδιοερασιτέχνες κάτοχοι Ελληνικού Πτυχίου Ραδιοερασιτέχνη ΚΑΤΗΓΟΡΙΑΣ 1 — HAREC</td><td class=\"callsign-code\">SV1, SV2… SV9 ακολουθούμενο από δύο (2), τρία (3) ή τέσσερα (4) λατινικά γράμματα</td></tr><tr><td>Διακριτικά κλήσεως ραδιοερασιτεχνικών αδειών «ΚΑΤΗΓΟΡΙΑΣ ΕΙΣΑΓΩΓΙΚΟΥ ΕΠΙΠΕΔΟΥ»</td><td>Ραδιοερασιτέχνες κάτοχοι Ελληνικού Πτυχίου Ραδιοερασιτέχνη «ΚΑΤΗΓΟΡΙΑΣ ΕΙΣΑΓΩΓΙΚΟΥ ΕΠΙΠΕΔΟΥ»</td><td class=\"callsign-code\">SY1, SY2… SY9 ακολουθούμενο από τρία (3) ή τέσσερα (4) λατινικά γράμματα</td></tr><tr><td>Διακριτικά κλήσεως κατόχων άδειας ραδιοερασιτέχνη SV0 βάσει αδείας της αλλοδαπής</td><td>Ραδιοερασιτέχνες με άδεια αλλοδαπής (όχι CEPT), μη κατέχοντες Ελληνικό Πτυχίο Ραδιοερασιτέχνη σύμφωνα με το Άρθρο 24</td><td class=\"callsign-code\">SV0 ακολουθούμενο από δύο (2) ή τρία (3) λατινικά γράμματα.<br>Οι νέες εκχωρήσεις γίνονται από την σειρά XAA, XAB XAC… μέχρι και XZZ</td></tr><tr><td rowspan=\"4\">Διακριτικά κλήσεως κατόχων άδειας ραδιοερασιτέχνη νομικών προσώπων</td><td><ul style=\"margin:0;padding-left:16px\"><li>Ραδιοερασιτεχνικοί σύλλογοι</li><li>Ραδιοηλεκτρικά Εργαστήρια τριτοβάθμιας εκπαίδευσης</li></ul></td><td class=\"callsign-code\">SZ1, SΖ2… SΖ9 ακολουθούμενο από ένα (1) μέχρι τέσσερα (4) λατινικά γράμματα</td></tr><tr><td>ΕΕΤΤ</td><td class=\"callsign-code\">SV1–9, SZ1–9, SX1–9, SY1–9, J41–9 — <strong>EETT</strong></td></tr><tr><td>Γενική Γραμματεία Πολιτικής Προστασίας</td><td class=\"callsign-code\">SV1–9, SZ1–9, SX1–9, SY1–9, J41–9 — <strong>GGPP</strong></td></tr><tr><td>Γενική Γραμματεία Επικοινωνιών</td><td class=\"callsign-code\">SV1–9, SZ1–9, SX1–9, SY1–9, J41–9 — <strong>T T</strong></td></tr><tr><td rowspan=\"4\">Ειδικά διακριτικά κλήσεως<br>(SPECIAL CALL SIGN)</td><td>Ραδιοερασιτεχνικοί σύλλογοι – νομικά πρόσωπα</td><td class=\"callsign-code\"><strong>SV, SZ, J4 ή SX</strong></td></tr><tr><td>Ομάδες ραδιοερασιτεχνών ή Μεμονωμένοι Έλληνες ραδιοερασιτέχνες «κατηγορίας 1»</td><td class=\"callsign-code\"><strong>SV, J4 ή SX</strong></td></tr><tr><td>Μεμονωμένοι Έλληνες ραδιοερασιτέχνες κατηγορίας «Εισαγωγικού Επιπέδου»</td><td class=\"callsign-code\"><strong>SY</strong></td></tr><tr><td>Αλλοδαποί ραδιοερασιτέχνες</td><td class=\"callsign-code\"><strong>SW</strong></td></tr><tr><td rowspan=\"3\">Διακριτικά κλήσεως<br>• Αναμεταδοτών<br>• Επαναληπτών<br>• Ραδιοφάρων</td><td rowspan=\"3\">Ραδιοερασιτεχνικοί σύλλογοι–νομικά πρόσωπα</td><td class=\"callsign-code\">Για μετάδοση φωνής:<br>SV1, SV2… SV9 ή SW1, SW2… SW9 ακολουθούμενο από ένα (1) λατινικό γράμμα</td></tr><tr><td class=\"callsign-code\">Για ραδιοφάρους:<br>SV1, SV2… SV9 ή SW1, SW2… SW9 ακολουθούμενο από ένα (1) έως (4) λατινικά γράμματα</td></tr><tr><td class=\"callsign-code\">Για ψηφιακούς:<br>J41, J42… J49 ακολουθούμενο από τρία (3) λατινικά γράμματα</td></tr></tbody></table>";
 const PHONETIC_TABLE_HTML = "<div class=\"phonetic-section\"><div class=\"phonetic-heading\">ΔΙΕΘΝΕΣ ΦΩΝΗΤΙΚΟ ΑΛΦΑΒΗΤΟ</div><table class=\"doc-table phonetic-table\"><tbody><tr><td>A = Alpha</td><td>J = Juliet</td><td>S = Sierra</td></tr><tr><td>B = Bravo</td><td>K = Kilo</td><td>T = Tango</td></tr><tr><td>C = Charlie</td><td>L = Lima</td><td>U = Uniform</td></tr><tr><td>D = Delta</td><td>M = Mike</td><td>V = Victor</td></tr><tr><td>E = Echo</td><td>N = November</td><td>W = Whiskey</td></tr><tr><td>F = Foxtrot</td><td>O = Oscar</td><td>X = X-ray</td></tr><tr><td>G = Golf</td><td>P = Papa</td><td>Y = Yankee</td></tr><tr><td>H = Hotel</td><td>Q = Quebec</td><td>Z = Zulu</td></tr><tr><td>I = India</td><td>R = Romeo</td><td></td></tr></tbody></table><div class=\"phonetic-heading\">ΕΛΛΗΝΙΚΟ ΦΩΝΗΤΙΚΟ ΑΛΦΑΒΗΤΟ</div><table class=\"doc-table phonetic-table\"><tbody><tr><td>Α = Αστήρ</td><td>Κ = Κενόν</td><td>Τ = Τίγρης</td></tr><tr><td>Β = Βύρων</td><td>Λ = Λάμα</td><td>Υ = Ύμνος</td></tr><tr><td>Γ = Γαλή</td><td>Μ = Μέλι</td><td>Φ = Φωφώ</td></tr><tr><td>Δ = Δόξα</td><td>Ν = Ναός</td><td>Χ = Χαρά</td></tr><tr><td>Ε = Ερμής</td><td>Ξ = Ξέρξης</td><td>Ψ = Ψυχή</td></tr><tr><td>Ζ = Ζεύς</td><td>Ο = Οσμή</td><td>Ω = Ωμέγα</td></tr><tr><td>Η = Ηρώ</td><td>Π = Πέτρος</td><td></td></tr><tr><td>Θ = Θεά</td><td>Ρ = Ρήγας</td><td></td></tr><tr><td>Ι = Ίσκιος</td><td>Σ = Σοφός</td><td></td></tr></tbody></table></div>";
